@@ -5,7 +5,7 @@ import Row from './Row';
 
 export default function Index() {
     const [xIsNext, setXIsNext] = useState(true);
-    const [squares, setSquares] = useState(Array(9).fill(""));
+    const [squares, setSquares] = useState(Array(9).fill(" "));
     const winner = calculateWinner(squares);
     let status;
     if (winner) {
@@ -27,7 +27,7 @@ export default function Index() {
       ];
       for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        if (squares[a] != " " && squares[a] === squares[b] && squares[a] === squares[c]) {
           return squares[a];
         }
       }
@@ -60,10 +60,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
       },
-    square: {
-        backgroundColor: "#ebedf0",
+      square: {
+        backgroundColor: 'white',
         height: 20,
-        width: 20,
+        width: 40,
         margin: 5,
+        borderWidth: 2,
+        borderRadius: 2,
+        borderColor: 'darkslategray'
     },
   });

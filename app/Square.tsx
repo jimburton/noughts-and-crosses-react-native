@@ -1,22 +1,32 @@
 // Square.tsx
-import { StyleSheet, Button, Text } from "react-native";
+import { StyleSheet, TouchableOpacity, Text } from "react-native";
 
 export default function Square({value, handleClick}) {
 
-    return  <Button style={styles.square} 
-                title={value}
-                onPress={handleClick}>
-            </Button>;
+    return  <TouchableOpacity  style={styles.square} 
+                        onPress={handleClick}>
+                    <Text style={styles.text}>{value}</Text>
+            </TouchableOpacity>;
 }
 
 const styles = StyleSheet.create({
     square: {
-        backgroundColor: 'white',
-        height: 20,
-        width: 40,
-        margin: 5,
-        borderWidth: 2,
-        borderRadius: 2,
-        borderColor: 'darkslategray'
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 40,
+        paddingHorizontal: 40,
+        borderRadius: 4,
+        borderWidth: 5,
+        borderColor: 'black',
+        elevation: 3,
+        backgroundColor: 'gray',
+    },
+    text: {
+        fontSize: 16,
+        fontFamily: 'monospace',
+        lineHeight: 21,
+        fontWeight: 'bold',
+        letterSpacing: 0.25,
+        color: 'black',
     },
 });

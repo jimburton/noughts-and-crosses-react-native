@@ -50,23 +50,18 @@ export default function Index() {
   
       return (
         <>
-          <View className="status"><Text>{status}</Text></View>
+          <View><Text style={styles.status}>{status}</Text></View>
           {[0,1,2].map((m) => { return <Row key={m} rowNum={m} squares={squares} handleClick={handleClick}/> })}
         </>
       )
 }
 const styles = StyleSheet.create({
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-      },
-      square: {
-        backgroundColor: 'white',
-        height: 20,
-        width: 40,
-        margin: 5,
-        borderWidth: 2,
-        borderRadius: 2,
-        borderColor: 'darkslategray'
+    status: {
+        fontSize: 16,
+        fontFamily: 'monospace',
+        lineHeight: 21,
+        fontWeight: 'bold',
+        letterSpacing: 0.25,
+        color: 'black',
     },
   });

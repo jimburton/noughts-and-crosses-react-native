@@ -18,5 +18,6 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         justifyContent: 'center',
+        backgroundColor: 'white'
     },
 });

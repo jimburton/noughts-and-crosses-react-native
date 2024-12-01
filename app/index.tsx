@@ -1,61 +1,115 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import './App.css';
 import Row from './Row';
 
 export default function Index() {
     const [xIsNext, setXIsNext] = useState(true);
+    const [gameOver, setGameOver] = useState(false);
     const [squares, setSquares] = useState(Array(9).fill(" "));
     const winner = calculateWinner(squares);
-    let status;
-    if (winner) {
-      status = "Winner: " + winner;
-    } else {
-      status = "Next player: " + (xIsNext ? "X" : "O");
-    }
-  
-    function calculateWinner(squares) {
-      const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-      ];
-      for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
-        if (squares[a] != " " && squares[a] === squares[b] && squares[a] === squares[c]) {
-          return squares[a];
+    let status = "";
+    setStatus(winner);
+
+    function setStatus(winner) {
+        if (winner) {
+            status = "Winner: " + winner;
+        } else {
+            status = "Next player: " + (xIsNext ? "X" : "O");
         }
-      }
-      return null;
     }
-  
+
+    function reset() {
+        setSquares(Array(9).fill(" "));
+        setXIsNext(true);
+        setGameOver(false);
+    }
+
+    /*useEffect(() => {
+        if (gameOver) {
+            console.log(`initializing interval`);
+            const interval = setInterval(() => {
+                reset();
+            }, 1000);
+            return () => {
+                console.log("clearing interval");
+                clearInterval(interval);
+            }
+        }
+    }, [gameOver,setGameOver]);*/
+
+    function calculateWinner(squares) {
+        if (!gameOver) {
+            const lines = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            let winner = null;
+            for (let i = 0; i < lines.length; i++) {
+                const [a, b, c] = lines[i];
+                if (squares[a] != " " && squares[a] === squares[b] && squares[a] === squares[c]) {
+                    winner = squares[a];
+                    break;
+                }
+            }
+            if(winner) {
+                console.log("we have a winner");
+                setStatus(winner);
+                setGameOver(true);
+            }
+            return winner;
+        }
+    }
+
     function handleClick(i: number) {
-      if (squares[i] != " " || calculateWinner(squares)) {
-        return;
-      }
-      const nextSquares = squares.slice();
-      if (xIsNext) {
-        nextSquares[i] = "X";
-      } else {
-        nextSquares[i] = "O";
-      }
-      setSquares(nextSquares);
-      setXIsNext(!xIsNext);
+        if (!gameOver) {
+            if (squares[i] != " " || calculateWinner(squares)) {
+                console.log("square is occupied or game is over");
+                return;
+            }
+
+            const nextSquares = squares.slice();
+            if (xIsNext) {
+                nextSquares[i] = "X";
+            } else {
+                nextSquares[i] = "O";
+            }
+            setSquares(nextSquares);
+        
+            if (!calculateWinner(squares)) {
+                setXIsNext(!xIsNext);
+            }
+        }
     }
-  
-      return (
+
+    return (
         <>
-          <View style={styles.statusContainer}><Text style={styles.status}>{status}</Text></View>
-          {[0,1,2].map((m) => { return <Row key={m} rowNum={m} squares={squares} handleClick={handleClick}/> })}
+        <View style={styles.statusContainer}><Text style={styles.status}>{status}</Text></View>
+        {[0,1,2].map((m) => { return <Row key={m} rowNum={m} squares={squares} handleClick={handleClick}/> })}
+        <TouchableOpacity style={[styles.resetButton,
+                        {opacity: gameOver ? 100 : 0}]}
+                    onPress={reset}><Text>Reset</Text></TouchableOpacity>
         </>
-      )
+    )
 }
 const styles = StyleSheet.create({
+    resetButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 40,
+        paddingHorizontal: 40,
+        borderWidth: 2,
+        borderColor: 'black',
+        elevation: 3,
+        
+        backgroundColor: 'darkslategray',
+    },
     statusContainer: {
         flex: 1,
         flexDirection: 'row',

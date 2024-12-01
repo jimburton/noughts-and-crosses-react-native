@@ -22,9 +22,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'gray',
     },
     text: {
-        fontSize: 16,
+        fontSize: 30,
         fontFamily: 'monospace',
-        lineHeight: 21,
+        lineHeight: 30,
         fontWeight: 'bold',
         letterSpacing: 0.25,
         color: 'black',

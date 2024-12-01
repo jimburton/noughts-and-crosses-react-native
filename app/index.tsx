@@ -57,7 +57,7 @@ export default function Index() {
 }
 const styles = StyleSheet.create({
     status: {
-        fontSize: 16,
+        fontSize: 17,
         fontFamily: 'monospace',
         lineHeight: 21,
         fontWeight: 'bold',

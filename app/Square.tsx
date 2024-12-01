@@ -15,11 +15,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 40,
         paddingHorizontal: 40,
-        borderRadius: 4,
-        borderWidth: 5,
+        borderWidth: 2,
         borderColor: 'black',
         elevation: 3,
-        backgroundColor: 'gray',
+        backgroundColor: 'white',
     },
     text: {
         fontSize: 30,

@@ -16,6 +16,7 @@ export default function Row({rowNum, squares, handleClick}) {
 
 const styles = StyleSheet.create({
     row: {
+        flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: 'white'

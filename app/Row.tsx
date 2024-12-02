@@ -2,6 +2,11 @@
 import { StyleSheet, View } from "react-native";
 import Square from './Square';
 
+/** 
+ * A component which nests three Row components.
+ * @author James Burton
+ * 
+ */
 export default function Row({rowNum, squares, handleClick}) {
     const inc = rowNum*3;
     return (

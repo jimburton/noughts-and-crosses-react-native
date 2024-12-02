@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Row from './Row';
 
+/** 
+ * A game of Noughts and Crosses using React Native. Made for teaching purposes
+ * on the OU module TM352 Web, Mobile and Cloud Technology.
+ * @author James Burton
+ * @see {@link https://github.com/jimburton/noughts-and-crosses-react-native}
+ * 
+ */
 export default function Index() {
     const [xIsNext, setXIsNext] = useState(true);
     const [gameOver, setGameOver] = useState(false);
@@ -10,7 +17,13 @@ export default function Index() {
     const winner = calculateWinner(squares);
     setStatusStr(winner);
 
-    function setStatusStr(winner) {
+    /** 
+     * Set the value of status. 
+     * 
+     * @param {string} winner - Name of the winning player or null.
+     * @returns {null}
+     */
+    function setStatusStr(winner: string) {
         if (!gameOver) {
             let statusStr;
             if (winner) {
@@ -23,13 +36,22 @@ export default function Index() {
             }
         }
     }
-
+    /** 
+     * Reset the game. 
+     * @returns {null}
+     */
     function reset() {
         setSquares(Array(9).fill(" "));
         setXIsNext(true);
         setGameOver(false);
     }
 
+    /** 
+     * Calculate the winner. 
+     * 
+     * @param {string} winner - Name of the winning player or null.
+     * @returns {string | null}
+     */
     function calculateWinner(squares) {
         if (!gameOver) {
             const lines = [
@@ -58,6 +80,12 @@ export default function Index() {
         }
     }
 
+    /** 
+     * Callback for onPress events from Squares. 
+     * 
+     * @param {number} i - The number of the Square component that was clicked on.
+     * @returns {null}
+     */
     function handleClick(i: number) {
         if (!gameOver) {
             if (squares[i] != " ") {
@@ -116,7 +144,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-      }, 
+    }, 
     status: {
         fontSize: 17,
         fontFamily: 'monospace',
@@ -128,4 +156,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-  });
+});

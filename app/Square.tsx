@@ -1,6 +1,10 @@
 // Square.tsx
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
-
+/** 
+ * A component representing a single cell on a board of noughts and crosses.
+ * @author James Burton
+ * 
+ */
 export default function Square({value, handleClick}) {
 
     return  <TouchableOpacity  style={styles.square} 

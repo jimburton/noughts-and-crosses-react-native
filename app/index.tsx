@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Row from './Row';
+import {terminal, getWinner, minimax} from './AI';
 
 /** 
  * A game of Noughts and Crosses using React Native. Made for teaching purposes
  * on the OU module TM352 Web, Mobile and Cloud Technology.
  * @author James Burton
+ * @date 03/12/2024
  * @see {@link https://github.com/jimburton/noughts-and-crosses-react-native}
  * 
  */
@@ -27,7 +29,7 @@ export default function Index() {
         if (!gameOver) {
             let statusStr;
             if (winner) {
-                statusStr = "Winner: " + winner;
+                statusStr = winner === "Draw" ? winner : "Winner: " + winner;
             } else {
                 statusStr = "Next player: " + (xIsNext ? "X" : "O");
             }
@@ -40,7 +42,7 @@ export default function Index() {
      * Reset the game. 
      * @returns {null}
      */
-    function reset() {
+    function reset(): void {
         setSquares(Array(9).fill(" "));
         setXIsNext(true);
         setGameOver(false);
@@ -49,34 +51,39 @@ export default function Index() {
     /** 
      * Calculate the winner. 
      * 
-     * @param {string} winner - Name of the winning player or null.
+     * @param {string[]} squares - The board array.
      * @returns {string | null}
      */
-    function calculateWinner(squares) {
+    function calculateWinner(squares: string[]): string {
         if (!gameOver) {
-            const lines = [
-                [0, 1, 2],
-                [3, 4, 5],
-                [6, 7, 8],
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                [0, 4, 8],
-                [2, 4, 6]
-            ];
-            let winner = null;
-            for (let i = 0; i < lines.length; i++) {
-                const [a, b, c] = lines[i];
-                if (squares[a] != " " && squares[a] === squares[b] && squares[a] === squares[c]) {
-                    winner = squares[a];
-                    break;
-                }
-            }
+            const winner = getWinner(squares);
             if(winner) {
                 setStatusStr(winner);
                 setGameOver(true);
             }
-            return winner;
+            return winner; 
+        }
+    }
+    /** 
+     * Calculate whether the game is over. 
+     * 
+     * @param {string[]} squares - The board array.
+     * @returns {string | null}
+     */
+    function calculateGameOver(squares: string[]): string {
+        if (!gameOver) {
+            const winner = getWinner(squares);
+            const done = terminal(squares);
+            if(winner) {
+                console.log("Winner: "+winner);
+                setStatusStr(winner);
+                setGameOver(true);
+            } else if (done) {
+                console.log("Draw");
+                setStatusStr("Draw");
+                setGameOver(true);
+            }
+            return winner || done; 
         }
     }
 
@@ -86,8 +93,10 @@ export default function Index() {
      * @param {number} i - The number of the Square component that was clicked on.
      * @returns {null}
      */
-    function handleClick(i: number) {
+    function handleClick(i: number): void {
+        console.log("handle click. gameOver: "+gameOver);
         if (!gameOver) {
+            console.log("Clicked on "+i);
             if (squares[i] != " ") {
                 return;
             }
@@ -99,10 +108,28 @@ export default function Index() {
                 nextSquares[i] = "O";
             }
             setSquares(nextSquares);
-            const winner = calculateWinner(squares);
-            if (!winner) {
+            const done = calculateGameOver(nextSquares);
+            if (!done) {
                 setXIsNext(!xIsNext);
+                takeAIMove(nextSquares);
             }
+        }
+    }
+
+    function takeAIMove(squares) {
+        console.log("Taking AI move. board: "+squares);
+        const move = minimax(squares, false);
+        if(move != null) {
+            console.log("Taking AI move: "+move);
+            const nextSquares = squares.slice();
+            nextSquares[move] = "0";
+            setSquares(nextSquares);
+            const done = calculateGameOver(squares);
+            if (!done) {
+                setXIsNext(true);
+            }
+        } else {
+            console.log("No move available");
         }
     }
 

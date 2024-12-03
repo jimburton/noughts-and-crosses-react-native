@@ -39,7 +39,7 @@
      * @param {move} - The move to play.
      * @returns {boolean} - true if the move is on the board and the square is unoccupied, otherwise false.
      */
-    function legal_move(board, move) {
+    function legalMove(board, move) {
         return move >= 0 && move <= 8 && board[move] === " ";
     }
 
@@ -59,7 +59,7 @@
      * @param {string[]} board - The board.
      * @returns {string} - The name of the winner, or null.
      */
-    export function  getWinner(board) {
+    export function getWinner(board) {
         const lines = [
             [0, 1, 2],
             [3, 4, 5],
@@ -143,6 +143,7 @@
             [v, move] =  minValue(board);
         }
         console.log("minimax got move: "+move);
+        // this shouldn't be needed...
         if(move == null) {
             const acts = actions(board);
             if(acts.length > 0) {

@@ -75,11 +75,9 @@ export default function Index() {
             const winner = getWinner(squares);
             const done = terminal(squares);
             if(winner) {
-                console.log("Winner: "+winner);
                 setStatusStr(winner);
                 setGameOver(true);
             } else if (done) {
-                console.log("Draw");
                 setStatusStr("Draw");
                 setGameOver(true);
             }
@@ -94,9 +92,7 @@ export default function Index() {
      * @returns {null}
      */
     function handleClick(i: number): void {
-        console.log("handle click. gameOver: "+gameOver);
         if (!gameOver) {
-            console.log("Clicked on "+i);
             if (squares[i] != " ") {
                 return;
             }
@@ -117,10 +113,8 @@ export default function Index() {
     }
 
     function takeAIMove(squares) {
-        console.log("Taking AI move. board: "+squares);
         const move = minimax(squares, false);
         if(move != null) {
-            console.log("Taking AI move: "+move);
             const nextSquares = squares.slice();
             nextSquares[move] = "0";
             setSquares(nextSquares);

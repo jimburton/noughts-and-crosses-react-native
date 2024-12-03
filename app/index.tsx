@@ -113,7 +113,7 @@ export default function Index() {
     }
 
     function takeAIMove(squares) {
-        const move = minimax(squares, false);
+        const [_,move] = minimax(squares, false);
         if(move != null) {
             const nextSquares = squares.slice();
             nextSquares[move] = "0";

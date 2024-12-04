@@ -17,7 +17,7 @@ export default function Index() {
     const [squares, setSquares] = useState(Array(9).fill(" "));
     const [status, setStatus] = useState("");
     const winner = calculateWinner(squares);
-    setStatusStr(winner);
+    setStatusStr(winner); 
 
     /** 
      * Set the value of status. 
@@ -112,6 +112,11 @@ export default function Index() {
         }
     }
 
+    /**
+     * Request a move from the AI player and update the board.
+     * TODO: currently hardcoded to expect the AI player is O. Fix.
+     * @param squares {string[]} - The board.
+     */
     function takeAIMove(squares) {
         const [_,move] = minimax(squares, false);
         if(move != null) {

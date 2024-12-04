@@ -116,6 +116,7 @@ export default function Index() {
      * Request a move from the AI player and update the board.
      * TODO: currently hardcoded to expect the AI player is O. Fix.
      * @param squares {string[]} - The board.
+     * @returns {null}
      */
     function takeAIMove(squares) {
         const [_,move] = minimax(squares, false);

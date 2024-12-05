@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "nac",
-    "slug": "nac",
+    "name": "noughts-and-crosses",
+    "slug": "noughts-and-crosses",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

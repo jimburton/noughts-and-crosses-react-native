@@ -87,14 +87,13 @@ export function getWinner(board) {
  * @returns {number} - 1 if the board is won by X, -1 if the board is won by O, otherwise 0.
  */
 function utility(board) {
-    w =   getWinner(board);
-    switch (w) {
-        case 'X':
-            return 1;
-        case 'O':
-            return -1;
-        default:
-            return 0;
+    const w =   getWinner(board);
+    if (w == 'X') {
+        return 1;
+    } else if (w == 'O') {
+        return -1;
+    } else {
+        return 0;
     }
 }
 
@@ -135,7 +134,9 @@ export function minimax(board, xIsNext) {
     let bestValue = xIsNext ? -Infinity : Infinity;
     let bestMove = null;
     
-    actions(board).forEach((move) => {
+    const acts = actions(board);
+    for(let i=0;i<acts.length;i++) {
+        move = acts[i];
         let newBoard = result(board, move);
         let [value, _] = minimax(newBoard, !xIsNext);
     
@@ -143,15 +144,20 @@ export function minimax(board, xIsNext) {
             if (value > bestValue) {
                 bestValue = value;
                 bestMove = move;
+                if(bestValue==1) {
+                    break;
+                }
             }
         } else {
             if (value < bestValue) {
                 bestValue = value;
-                bestMove = move; 
+                bestMove = move;
+                if(bestValue==-1) {
+                    break;
+                } 
             }
         }
-    });
-    
+    }
     return [bestValue, bestMove]; 
     
 }

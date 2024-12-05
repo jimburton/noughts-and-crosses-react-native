@@ -119,7 +119,8 @@ export default function Index() {
      * @returns {null}
      */
     function takeAIMove(squares) {
-        const [_,move] = minimax(squares, false);
+        const [val,move] = minimax(squares, false);
+        console.log("index.tsx: [bestValue, bestMove]: "+[val,move]);
         if(move != null) {
             const nextSquares = squares.slice();
             nextSquares[move] = "0";

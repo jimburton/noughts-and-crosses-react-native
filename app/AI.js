@@ -154,7 +154,7 @@ export function minimax(board, xIsNext) {
                 bestMove = move;
                 if(bestValue==-1) {
                     break;
-                } 
+                }
             }
         }
     }

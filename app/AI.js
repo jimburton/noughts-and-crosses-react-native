@@ -32,17 +32,6 @@ function occupied(board) {
 }
 
 /** 
- * Decide whether a move is legal. 
- * 
- * @param {string[]} board - The board.
- * @param {move} - The move to play.
- * @returns {boolean} - true if the move is on the board and the square is unoccupied, otherwise false.
- */
-function legalMove(board, move) {
-    return move >= 0 && move <= 8 && board[move] === " ";
-}
-
-/** 
  * Decide whether the game is over. 
  * 
  * @param {string[]} board - The board.
@@ -52,6 +41,17 @@ export function terminal(board) {
     return getWinner(board) ||  occupied(board) === 9;
 }
 
+const winning_lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
+
 /** 
  * Calculate the winner, if any. 
  * 
@@ -59,25 +59,29 @@ export function terminal(board) {
  * @returns {string} - The name of the winner, or null.
  */
 export function getWinner(board) {
-    const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ];
+    
     let winner = null;
-    for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
+    for (let i = 0; i < winning_lines.length; i++) {
+        const [a, b, c] = winning_lines[i];
         if (board[a] != " " && board[a] == board[b] && board[a] == board[c]) {
             winner = board[a];
             break;
         }
     }
     return winner; 
+}
+
+function getWinningSquare(board, p) {
+    for (let i = 0; i < winning_lines.length; i++) {
+        const [a, b, c] = winning_lines[i];
+        const onBoard = [board[a], board[b], board[c]];
+        const numP = onBoard.filter((s) => s === p).length;
+        const numBlank = onBoard.filter((s) => s === ' ').length;
+        if (numP === 2 && numBlank === 1) {
+            return [a, b, c][onBoard.indexOf(' ')];
+        }
+    }
+    return null; 
 }
 
 /** 
@@ -115,7 +119,7 @@ function result(board, move) {
  * @param {string[]} board - The board.
  * @returns {string} - The name of the next player.
  */
-function player(board) {
+export function player(board) {
     return  occupied(board) % 2 == 0 ? 'X' : 'O';
 }
 
@@ -126,38 +130,66 @@ function player(board) {
  * @param {boolean} xIsNext - true if X is next.
  * @returns {number} - The best move to take for the current player.
  */
-export function minimax(board, xIsNext) {
+export function minimax(board) {
     if (terminal(board)) {
-        return [utility(board), null]; // Return utility and null move for terminal states
+      return [utility(board), null]; // Return utility and null move for terminal states
     }
-    
-    let bestValue = xIsNext ? -Infinity : Infinity;
+    // hack because the algorithm is ignoring winning moves
+    const p = player(board); 
+    const opp = p === 'X' ? 'O' : 'X';
+    const winningMove = getWinningSquare(board, p);
+    if(winningMove) {
+        const newBoard = result(board, winningMove); 
+        return [utility(newBoard), winningMove];
+    }
+    const opposeWinningMove = getWinningSquare(board, opp);
+    if(opposeWinningMove) {
+        const newBoard = result(board, opposeWinningMove); 
+        return [utility(newBoard), opposeWinningMove];
+    }
+    // end of hack
+    const isMaximizingPlayer = p === 'X';
+    let bestValue = isMaximizingPlayer ? -Infinity : Infinity;
     let bestMove = null;
-    
-    const acts = actions(board);
-    for(let i=0;i<acts.length;i++) {
-        move = acts[i];
+
+    actions(board).forEach((move) => {
         let newBoard = result(board, move);
-        let [value, _] = minimax(newBoard, !xIsNext);
-    
-        if (xIsNext) {
+        let [value, _] = minimax(newBoard);
+
+        if (isMaximizingPlayer) {
             if (value > bestValue) {
                 bestValue = value;
                 bestMove = move;
-                if(bestValue==1) {
-                    break;
-                }
             }
         } else {
             if (value < bestValue) {
                 bestValue = value;
                 bestMove = move;
-                if(bestValue==-1) {
-                    break;
-                }
             }
         }
+    });
+
+    return [bestValue, bestMove];
+}
+
+function printBoard(board, turn) {
+    console.group(`Turn ${turn}:`); 
+    console.log(board.slice(0,3).join(' | '));
+    console.log('---------');
+    console.log(board.slice(3,6).join(' | '));
+    console.log('---------');
+    console.log(board.slice(6,9).join(' | '));
+    console.groupEnd();
+}
+
+export function play_yourself(board) {
+    var xIsNext = player(board) === 'X';
+    var turn = occupied(board) + 1;
+    while (!terminal(board)) {
+        board = result(board, minimax(board, xIsNext)[1]);
+        printBoard(board, turn++);
+        xIsNext = !xIsNext;
     }
-    return [bestValue, bestMove]; 
-    
+    const winner = getWinner(board);
+    console.log(winner ? `Winner is ${winner}!` : "It's a tie");
 }

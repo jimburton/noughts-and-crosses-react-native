@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Row from './Row';
-import { terminal, getWinner, minimax, play_yourself, dumb } from './AI';
+import { terminal, getWinner, minimax, getNextPlayer } from './AI';
 
 /** 
  * A game of Noughts and Crosses using React Native. Made for teaching purposes
@@ -11,138 +11,101 @@ import { terminal, getWinner, minimax, play_yourself, dumb } from './AI';
  * @see {@link https://github.com/jimburton/noughts-and-crosses-react-native}
  * 
  */
+
 export default function Index() {
     const [xIsNext, setXIsNext] = useState(true);
-    const [gameOver, setGameOver] = useState(false);
-    const [squares, setSquares] = useState(Array(9).fill(" "));
-    const [status, setStatus] = useState("");
-    const winner = calculateWinner(squares);
-    setStatusStr(winner); 
+        const [gameOver, setGameOver] = useState(false);
+        const [squares, setSquares] = useState(Array(9).fill(" "));
+        const [status, setStatus] = useState("Next player: X");
 
-    /** 
-     * Set the value of status. 
-     * 
-     * @param {string} winner - Name of the winning player or null.
-     * @returns {null}
-     */
-    function setStatusStr(winner: string) {
-        if (!gameOver) {
-            let statusStr;
+        /** * Calculates the winner or draw status and updates the game state.
+         * @param {string[]} board - The board array.
+         */
+        const updateGameStatus = useCallback((board) => {
+            const winner = getWinner(board);
+            const isTerminal = terminal(board);
+
             if (winner) {
-                statusStr = winner === "Draw" ? winner : "Winner: " + winner;
-            } else {
-                statusStr = "Next player: " + (xIsNext ? "X" : "O");
+                setStatus("Winner: " + winner);
+                setGameOver(true);
+                return winner;
             }
-            if(statusStr != status) {
-                setStatus(statusStr);
-            }
-        }
-    }
-    /** 
-     * Reset the game. 
-     * @returns {null}
-     */
-    function reset(): void {
-        setSquares(Array(9).fill(" "));
-        setXIsNext(true);
-        setGameOver(false);
-    }
 
-    /** 
-     * Calculate the winner. 
-     * 
-     * @param {string[]} squares - The board array.
-     * @returns {string | null}
-     */
-    function calculateWinner(squares: string[]): string {
-        if (!gameOver) {
-            const winner = getWinner(squares);
-            if(winner) {
-                setStatusStr(winner);
+            if (isTerminal) {
+                setStatus("Draw");
                 setGameOver(true);
+                return "Draw";
             }
-            return winner; 
-        }
-    }
-    /** 
-     * Calculate whether the game is over. 
-     * 
-     * @param {string[]} squares - The board array.
-     * @returns {string | null}
-     */
-    function calculateGameOver(squares: string[]): string {
-        if (!gameOver) {
-            const winner = getWinner(squares);
-            const done = terminal(squares);
-            if(winner) {
-                setStatusStr(winner);
-                setGameOver(true);
-            } else if (done) {
-                setStatusStr("Draw");
-                setGameOver(true);
-            }
-            return winner || done; 
-        }
-    }
 
-    /** 
-     * Callback for onPress events from Squares. 
-     * 
-     * @param {number} i - The number of the Square component that was clicked on.
-     * @returns {null}
-     */
-    function handleClick(i: number): void {
-        if (!gameOver) {
-            if (squares[i] != " ") {
+            // If not over, update the "Next player" status
+            setStatus("Next player: " + (getNextPlayer(board)));
+            return null;
+
+        }, []);
+
+        // Effect to run the AI move when it is O's turn and the game is not over.
+        useEffect(() => {
+            if (!xIsNext && !gameOver) {
+                // Use a short delay to simulate "thinking" and ensure React finishes rendering the human move
+                const timer = setTimeout(() => {
+                    const aiPlayer = 'O';
+                    takeAIMove(squares, aiPlayer);
+                }, 500); // 500ms delay
+
+                return () => clearTimeout(timer); // Cleanup
+            }
+        }, [xIsNext, gameOver, squares, updateGameStatus]);
+
+        /** * Reset the game.
+         */
+        function reset() {
+            setSquares(Array(9).fill(" "));
+            setXIsNext(true);
+            setGameOver(false);
+            setStatus("Next player: X");
+        }
+
+        /** * Callback for onPress events from Squares (Human Move).
+         * * @param {number} i - The number of the Square component that was clicked on.
+         */
+        function handleClick(i) {
+            if (gameOver || squares[i] !== " ") {
                 return;
             }
 
+            // Process Human Move
             const nextSquares = squares.slice();
-            if (xIsNext) {
-                nextSquares[i] = "X";
-            } else {
-                nextSquares[i] = "O";
-            }
-            setSquares(nextSquares);
-            const done = calculateGameOver(nextSquares);
-            if (!done) {
-                setXIsNext(!xIsNext);
-                takeAIMove(nextSquares);
-            }
-        }
-    }
+            const currentPlayer = xIsNext ? "X" : "O";
 
-    /**
-     * Request a move from the AI player and update the board.
-     * TODO: currently hardcoded to expect the AI player is O. Fix.
-     * @param squares {string[]} - The board.
-     * @returns {null}
-     */
-    function takeAIMove(board: string[]) {
-        console.log("Getting best move for board: "+board);
-        //play_yourself(board);
-        let move = dumb(board);
-        let val = 0
-        console.log("Output from dumb: "+move);
-        //if (move == -1) {
-            console.log("Calling minimax");
-            [val,move] = minimax(board);
-            console.log("Received move from minimax: "+move);
-        //}
-        console.log("move != null: "+(move!=null));
-        if(move != null) {
-            console.log("Putting the move on the board");
-            const nextSquares = board.slice();
-            nextSquares[move] = "0";
+            nextSquares[i] = currentPlayer;
+
+            // Update State for Render (Human Move Complete)
             setSquares(nextSquares);
-            const done = calculateGameOver(nextSquares);
-            if (!done) {
-                setXIsNext(true);
-            }
-        } else {
-            console.log("No move available");
+            setXIsNext(!xIsNext);
+
+            // Update Status immediately based on this board
+            updateGameStatus(nextSquares);
         }
-    }
+
+        /**
+         * Request a move from the AI player and update the board.
+         * * @param board {string[]} - The board state after the human's move.
+         * @param aiPlayer {string} - The marker the AI is playing ('O').
+         */
+        function takeAIMove(board, aiPlayer) {
+
+            const [val, move] = minimax(board);
+
+            if (move !== null) {
+                const nextSquares = board.slice();
+                nextSquares[move] = aiPlayer;
+                setSquares(nextSquares);
+                setXIsNext(true);
+                updateGameStatus(nextSquares);
+            } else {
+                updateGameStatus(board);
+            }
+        }
 
     return (
         <>

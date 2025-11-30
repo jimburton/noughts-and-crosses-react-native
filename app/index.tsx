@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Row from './Row';
-import { terminal, getWinner, minimax, play_yourself } from './AI';
+import { terminal, getWinner, minimax, play_yourself, dumb } from './AI';
 
 /** 
  * A game of Noughts and Crosses using React Native. Made for teaching purposes
@@ -121,9 +121,17 @@ export default function Index() {
     function takeAIMove(board: string[]) {
         console.log("Getting best move for board: "+board);
         //play_yourself(board);
-        const [val,move] = minimax(board);
-        console.log("index.tsx: [bestValue, bestMove]: "+[val,move]);
+        let move = dumb(board);
+        let val = 0
+        console.log("Output from dumb: "+move);
+        //if (move == -1) {
+            console.log("Calling minimax");
+            [val,move] = minimax(board);
+            console.log("Received move from minimax: "+move);
+        //}
+        console.log("move != null: "+(move!=null));
         if(move != null) {
+            console.log("Putting the move on the board");
             const nextSquares = board.slice();
             nextSquares[move] = "0";
             setSquares(nextSquares);

@@ -193,3 +193,55 @@ export function play_yourself(board) {
     const winner = getWinner(board);
     console.log(winner ? `Winner is ${winner}!` : "It's a tie");
 }
+
+function two_ohs_and_one_blank(cells) {
+    if (cells.length === 3) {
+        const ohs = cells.filter((c) => c === 'O');
+        if (ohs.length === 2) {
+            return cells.indexOf(' ');
+        }
+    }
+    return -1;
+}
+export function dumb(board) {
+    let winning_spot = two_ohs_and_one_blank(board.slice(0,3));
+    if (winning_spot != -1) {
+        return winning_spot;
+    }
+    winning_spot = two_ohs_and_one_blank(board.slice(3,6));
+    if (winning_spot != -1) {
+        return 3+winning_spot;
+    }
+    winning_spot = two_ohs_and_one_blank(board.slice(6,9));
+    if (winning_spot != -1) {
+         return 6+winning_spot;
+    }
+    winning_spot = two_ohs_and_one_blank([board[0], board[3], board[6]]);
+    if (winning_spot != -1) {
+         return 6+winning_spot;
+    }
+    winning_spot = two_ohs_and_one_blank([board[1], board[4], board[7]]);
+    if (winning_spot != -1) {
+         return winning_spot+(winning_spot*3);
+    }
+    winning_spot = two_ohs_and_one_blank([board[2], board[5], board[8]]);
+    if (winning_spot != -1) {
+         return winning_spot+(winning_spot*3)+2;
+    }
+    winning_spot = two_ohs_and_one_blank([board[0], board[4], board[8]]);
+    if (winning_spot != -1) {
+         return winning_spot+(winning_spot*3)+1;
+    }
+    winning_spot = two_ohs_and_one_blank([board[2], board[4], board[6]]);
+    if (winning_spot != -1) {
+         switch (winning_spot) {
+            case 0:
+                return 2;
+            case 1:
+                return 4;
+            case 2:
+                return 6;
+         }
+    }
+    return -1;
+}

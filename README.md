@@ -1,7 +1,7 @@
 # Noughts and Crosses for React Native
 
-This is a simple demo for teaching on the module TM325 Web, Mobile and Cloud technology at
-The Open University. It adapts [this React web app](https://github.com/jimburton/noughts-and-crosses-react) and is tested on Android only. 
+This is a simple demo for teaching on the module TM325 Web, Mobile and Cloud 
+technology at the Open University. It adapts [this React web app](https://github.com/jimburton/noughts-and-crosses-react). Only the Android and web targets are tested.
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
